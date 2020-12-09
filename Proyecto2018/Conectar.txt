@@ -1,0 +1,77 @@
+import com.mysql.jdbc.Connection;
+import com.mysql.jdbc.PreparedStatement;
+import com.mysql.jdbc.Statement;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
+/**
+ *
+ * @author José Carlos Bran
+ */
+public class Conectar {
+    private static Connection conecxion;
+    private static final String driver="com.mysql.jdbc.Driver";
+    private static final String user="root";
+    private static final String pasword="";
+    private static final String url="jdbc:mysql://localhost:3306/proyecto2018";
+    DefaultTableModel model;
+        
+ 
+    
+    public Connection ConectarBase (){
+        
+            conecxion=null;
+        try {
+            Class.forName(driver);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Conectar.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try {
+            conecxion=(Connection) DriverManager.getConnection(url, user, pasword);
+        } catch (SQLException ex) {
+            Logger.getLogger(Conectar.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+            
+       return conecxion;
+        
+    }
+    
+    public void DesconectarBase(){
+        try{
+            conecxion.close();
+            conecxion=null;
+            if(conecxion==null){
+                System.out.println("conexion terminada");
+            }
+        
+        }catch(SQLException ex){
+            
+            JOptionPane.showMessageDialog(null,ex.getMessage(),"error al cerrar  la conexion de datos ",JOptionPane.ERROR_MESSAGE);
+             }  
+}
+    
+    public void crearHabitacion(int numhab,String tiphab,String tipocam,String desc,float precio ){
+     int res=0;
+     try {
+         String SQLINSERT =("INSERT INTO habitacion (numeroHabitacion,tipoHabitacion,tipoCama,descripción,precio)values(?,?,?,?,?)");
+         Conectar con= new Conectar();
+         java.sql.Connection cn= con.ConectarBase();
+         java.sql.PreparedStatement PS = cn.prepareStatement(SQLINSERT);
+         PS.setInt(1, numhab);
+         PS.setString(2, tiphab);
+         PS.setString(3, tipocam);
+         PS.setString(4, desc);
+         PS.setFloat(5, precio);
+         PS.executeUpdate();
+             
+     } catch (SQLException ex) {
+         Logger.getLogger(CrearUsuarioAdministrador.class.getName()).log(Level.SEVERE, null, ex);
+         JOptionPane.showMessageDialog(null, "Datos No Guardados");
+     }
+ }
